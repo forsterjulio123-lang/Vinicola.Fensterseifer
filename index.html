@@ -31,8 +31,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:72px}
-body{background:var(--papel);color:var(--tinta);font:300 17px/1.65 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
-body.trava{overflow:hidden}
+body{background:var(--papel);color:var(--tinta);font:300 17px/1.65 var(--sans);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 img{display:block;max-width:100%}
 a{color:inherit}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -83,7 +82,17 @@ section{padding:clamp(72px,10vw,140px) 0}
 .ped{white-space:nowrap}
 .abre-menu{display:none;font:500 .8rem var(--sans);letter-spacing:.14em;text-transform:uppercase;padding:14px 6px;min-width:64px;text-align:right;cursor:pointer;touch-action:manipulation;position:relative;z-index:2}
 button{touch-action:manipulation}
-.menu .menu-extra{display:none}
+/* menu do celular: camada própria, fora do topo */
+.menu-cel{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:var(--papel);flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
+html.menu-aberto .menu-cel{display:flex}
+html.menu-aberto .wpp{display:none}
+.menu-cel .mc-topo{display:flex;align-items:center;justify-content:space-between;height:68px;padding:0 var(--gut);border-bottom:1px solid var(--linha);flex:none}
+.menu-cel .mc-topo img{width:64px}
+.menu-cel .mc-topo button{font:500 .8rem var(--sans);letter-spacing:.14em;text-transform:uppercase;padding:14px 6px;min-width:64px;text-align:right}
+.menu-cel nav{display:flex;flex-direction:column;padding:8px var(--gut) 0}
+.menu-cel nav a{font:400 1.9rem/1.2 var(--display);color:var(--tinta);text-decoration:none;padding:16px 0;border-bottom:1px solid var(--linha)}
+.menu-cel .mc-rod{padding:28px var(--gut) calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
+.menu-cel .mc-rod span{font-size:.85rem;color:var(--tinta-2)}
 
 /* hero */
 .hero{min-height:100vh;min-height:100svh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);padding:76px 0 0}
@@ -282,13 +291,7 @@ footer strong{color:var(--ouro-claro);font-weight:500;letter-spacing:.14em;text-
   .topo{background:var(--papel);backdrop-filter:none;-webkit-backdrop-filter:none}
   .topo .wrap{height:68px}
   html{scroll-padding-top:64px}
-  .menu{display:none;position:fixed;top:68px;left:0;right:0;bottom:0;background:var(--papel);border-top:1px solid var(--linha);flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:12px var(--gut) calc(24px + env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:60}
-  html.menu-aberto .menu{display:flex}
-  html.menu-aberto .wpp{display:none}
-  .menu a{font:400 1.9rem/1.2 var(--display);letter-spacing:0;text-transform:none;color:var(--tinta);padding:16px 0;border-bottom:1px solid var(--linha)}
-  .menu .menu-extra{display:flex;flex-direction:column;gap:12px;margin-top:28px}
-  .menu .menu-extra .btn{border-bottom:0;font:500 .82rem var(--sans);letter-spacing:.14em;text-transform:uppercase;padding:0 28px;color:var(--papel)}
-  .menu .menu-extra span{font-size:.85rem;color:var(--tinta-2)}
+  .menu{display:none}
   .abre-menu{display:block}
   .hero{padding-top:68px}
   .hero{grid-template-columns:1fr;min-height:auto}
@@ -401,17 +404,31 @@ footer strong{color:var(--ouro-claro);font-weight:500;letter-spacing:.14em;text-
       <a href="#vinhos">Vinhos</a>
       <a href="#azeite">Azeite</a>
       <a href="#contato">Contato</a>
-      <div class="menu-extra">
-        <a class="btn btn-cheio" href="#" data-wpp="Olá! Vim pelo site da Vinícola Fensterseifer.">Falar no WhatsApp</a>
-        <span>Encruzilhada do Sul · RS · @vinicolafensterseifer</span>
-      </div>
     </nav>
     <div style="display:flex;gap:18px;align-items:center">
       <button type="button" class="ped" id="abrir">Pedido (<b id="conta">0</b>)</button>
-      <button type="button" class="abre-menu" id="abre-menu" aria-expanded="false" aria-controls="menu">Menu</button>
+      <button type="button" class="abre-menu" id="abre-menu" aria-controls="menu-cel" onclick="document.documentElement.className+=' menu-aberto'">Menu</button>
     </div>
   </div>
 </header>
+
+<div class="menu-cel" id="menu-cel" role="dialog" aria-label="Menu">
+  <div class="mc-topo">
+    <img src="img/logo-haf-escuro.png" alt="Vinícola Fensterseifer">
+    <button type="button" onclick="document.documentElement.className=document.documentElement.className.replace(/\s*menu-aberto/g,'')">Fechar</button>
+  </div>
+  <nav aria-label="Menu do celular">
+    <a href="#familia" onclick="document.documentElement.className=document.documentElement.className.replace(/\s*menu-aberto/g,'')">A família</a>
+    <a href="#vinhedo" onclick="document.documentElement.className=document.documentElement.className.replace(/\s*menu-aberto/g,'')">Vinhedo</a>
+    <a href="#vinhos" onclick="document.documentElement.className=document.documentElement.className.replace(/\s*menu-aberto/g,'')">Vinhos</a>
+    <a href="#azeite" onclick="document.documentElement.className=document.documentElement.className.replace(/\s*menu-aberto/g,'')">Azeite</a>
+    <a href="#contato" onclick="document.documentElement.className=document.documentElement.className.replace(/\s*menu-aberto/g,'')">Contato</a>
+  </nav>
+  <div class="mc-rod">
+    <a class="btn btn-cheio" href="https://wa.me/5551994032720" data-wpp="Olá! Vim pelo site da Vinícola Fensterseifer.">Falar no WhatsApp</a>
+    <span>Encruzilhada do Sul · RS · @vinicolafensterseifer</span>
+  </div>
+</div>
 
 <main>
 <section class="hero" id="inicio">
@@ -699,8 +716,8 @@ itens.addEventListener("click",function(e){
   salva(); desenha();
 });
 var gav=document.getElementById("gaveta"),veu=document.getElementById("veu");
-function abre(){av.classList.remove("on");gav.classList.add("on");veu.classList.add("on");document.body.classList.add("trava");}
-function fecha(){gav.classList.remove("on");veu.classList.remove("on");document.body.classList.remove("trava");}
+function abre(){av.classList.remove("on");gav.classList.add("on");veu.classList.add("on");}
+function fecha(){gav.classList.remove("on");veu.classList.remove("on");}
 document.getElementById("abrir").onclick=abre;
 document.getElementById("fechar").onclick=fecha; veu.onclick=fecha;
 document.addEventListener("keydown",function(e){if(e.key==="Escape")fecha();});
@@ -739,19 +756,9 @@ var topo=document.getElementById("topo");
 function rola(){topo.classList.toggle("fixo",scrollY>30);}
 addEventListener("scroll",rola,{passive:true}); rola();
 var menu=document.getElementById("menu");
-var bMenu=document.getElementById("abre-menu");
-var raiz=document.documentElement;
-function menuAberto(on){
-  if(on) raiz.classList.add("menu-aberto"); else raiz.classList.remove("menu-aberto");
-  bMenu.textContent=on?"Fechar":"Menu";
-  bMenu.setAttribute("aria-expanded",on?"true":"false");
-  if(on) document.body.classList.add("trava"); else document.body.classList.remove("trava");
-}
-bMenu.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();menuAberto(!raiz.classList.contains("menu-aberto"));});
-menu.addEventListener("click",function(e){var t=e.target; while(t&&t!==menu){if(t.tagName==="A"){menuAberto(false);return;} t=t.parentNode;}});
-document.addEventListener("keydown",function(e){if(e.key==="Escape") menuAberto(false);});
-if(window.matchMedia){var mq=window.matchMedia("(min-width:1021px)"); var fechaDesk=function(){if(mq.matches) menuAberto(false);}; if(mq.addEventListener) mq.addEventListener("change",fechaDesk); else if(mq.addListener) mq.addListener(fechaDesk);}
-document.getElementById("abrir").addEventListener("click",function(){menuAberto(false);});
+function fechaMenu(){var r=document.documentElement;r.className=r.className.replace(/\s*menu-aberto/g,"");}
+document.addEventListener("keydown",function(e){if(e.key==="Escape") fechaMenu();});
+document.getElementById("abrir").addEventListener("click",fechaMenu);
 var pend=[].slice.call(document.querySelectorAll(".sobe"));
 function revela(){
   var h=window.innerHeight||document.documentElement.clientHeight;
