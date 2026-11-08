@@ -81,7 +81,8 @@ section{padding:clamp(72px,10vw,140px) 0}
 .ped:hover{background:var(--tinta);color:var(--papel)}
 .ped b{font-weight:600}
 .ped{white-space:nowrap}
-.abre-menu{display:none;font:500 .8rem var(--sans);letter-spacing:.14em;text-transform:uppercase;padding:12px 4px;min-width:64px;text-align:right}
+.abre-menu{display:none;font:500 .8rem var(--sans);letter-spacing:.14em;text-transform:uppercase;padding:14px 6px;min-width:64px;text-align:right;cursor:pointer;touch-action:manipulation;position:relative;z-index:2}
+button{touch-action:manipulation}
 .menu .menu-extra{display:none}
 
 /* hero */
@@ -281,8 +282,9 @@ footer strong{color:var(--ouro-claro);font-weight:500;letter-spacing:.14em;text-
   .topo{background:var(--papel);backdrop-filter:none;-webkit-backdrop-filter:none}
   .topo .wrap{height:68px}
   html{scroll-padding-top:64px}
-  .menu{position:fixed;top:68px;left:0;right:0;height:calc(100vh - 68px);height:calc(100dvh - 68px);background:var(--papel);border-top:1px solid var(--linha);flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:12px var(--gut) calc(24px + env(safe-area-inset-bottom));overflow-y:auto;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s,transform .25s,visibility 0s .25s;z-index:60}
-  .menu.on{opacity:1;visibility:visible;transform:none;transition:opacity .25s,transform .25s}
+  .menu{display:none;position:fixed;top:68px;left:0;right:0;bottom:0;background:var(--papel);border-top:1px solid var(--linha);flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:12px var(--gut) calc(24px + env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:60}
+  html.menu-aberto .menu{display:flex}
+  html.menu-aberto .wpp{display:none}
   .menu a{font:400 1.9rem/1.2 var(--display);letter-spacing:0;text-transform:none;color:var(--tinta);padding:16px 0;border-bottom:1px solid var(--linha)}
   .menu .menu-extra{display:flex;flex-direction:column;gap:12px;margin-top:28px}
   .menu .menu-extra .btn{border-bottom:0;font:500 .82rem var(--sans);letter-spacing:.14em;text-transform:uppercase;padding:0 28px;color:var(--papel)}
@@ -405,8 +407,8 @@ footer strong{color:var(--ouro-claro);font-weight:500;letter-spacing:.14em;text-
       </div>
     </nav>
     <div style="display:flex;gap:18px;align-items:center">
-      <button class="ped" id="abrir">Pedido (<b id="conta">0</b>)</button>
-      <button class="abre-menu" id="abre-menu" aria-expanded="false" aria-controls="menu">Menu</button>
+      <button type="button" class="ped" id="abrir">Pedido (<b id="conta">0</b>)</button>
+      <button type="button" class="abre-menu" id="abre-menu" aria-expanded="false" aria-controls="menu">Menu</button>
     </div>
   </div>
 </header>
@@ -738,14 +740,17 @@ function rola(){topo.classList.toggle("fixo",scrollY>30);}
 addEventListener("scroll",rola,{passive:true}); rola();
 var menu=document.getElementById("menu");
 var bMenu=document.getElementById("abre-menu");
+var raiz=document.documentElement;
 function menuAberto(on){
-  menu.classList.toggle("on",on); bMenu.textContent=on?"Fechar":"Menu";
-  bMenu.setAttribute("aria-expanded",on?"true":"false"); document.body.classList.toggle("trava",on);
+  if(on) raiz.classList.add("menu-aberto"); else raiz.classList.remove("menu-aberto");
+  bMenu.textContent=on?"Fechar":"Menu";
+  bMenu.setAttribute("aria-expanded",on?"true":"false");
+  if(on) document.body.classList.add("trava"); else document.body.classList.remove("trava");
 }
-bMenu.onclick=function(){menuAberto(!menu.classList.contains("on"));};
-menu.addEventListener("click",function(e){if(e.target.closest("a")) menuAberto(false);});
+bMenu.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();menuAberto(!raiz.classList.contains("menu-aberto"));});
+menu.addEventListener("click",function(e){var t=e.target; while(t&&t!==menu){if(t.tagName==="A"){menuAberto(false);return;} t=t.parentNode;}});
 document.addEventListener("keydown",function(e){if(e.key==="Escape") menuAberto(false);});
-addEventListener("resize",function(){if(innerWidth>1020) menuAberto(false);});
+if(window.matchMedia){var mq=window.matchMedia("(min-width:1021px)"); var fechaDesk=function(){if(mq.matches) menuAberto(false);}; if(mq.addEventListener) mq.addEventListener("change",fechaDesk); else if(mq.addListener) mq.addListener(fechaDesk);}
 document.getElementById("abrir").addEventListener("click",function(){menuAberto(false);});
 var pend=[].slice.call(document.querySelectorAll(".sobe"));
 function revela(){
